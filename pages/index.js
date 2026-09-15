@@ -7,6 +7,7 @@ import {
   PopUp,
   Footer,
   CreateCampaignModal,
+  StatsAnalytics,
 } from "../Components";
 
 const Index = () => {
@@ -26,7 +27,7 @@ const Index = () => {
   const [openCreateModal, setOpenCreateModal] = useState(false);
 
   // Filters and Search State
-  const [activeTab, setActiveTab] = useState("all"); // 'all' | 'active' | 'funded' | 'my'
+  const [activeTab, setActiveTab] = useState("all"); // 'all' | 'active' | 'funded' | 'my' | 'stats'
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest"); // 'newest' | 'target_high' | 'target_low' | 'most_funded'
   const [loading, setLoading] = useState(true);
@@ -150,8 +151,8 @@ const Index = () => {
         stats={platformStats}
       />
 
-      {/* Main Campaign Explorer */}
-      <main id="campaigns-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* Main Campaign Explorer / Analytics Section */}
+      <main id="campaigns-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 scroll-mt-20">
         {/* Controls Bar: Tabs, Search, Sort */}
         <div className="glass-panel rounded-2xl p-4 sm:p-5 mb-8 border border-white/10 space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -212,68 +213,81 @@ const Index = () => {
                   {myCount}
                 </span>
               </button>
+
+              <button
+                onClick={() => setActiveTab("stats")}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                  activeTab === "stats"
+                    ? "bg-brand-600 text-white shadow-md shadow-brand-600/30"
+                    : "bg-white/5 text-gray-300 hover:bg-white/10"
+                }`}
+              >
+                <span>Stats & Analytics</span>
+              </button>
             </div>
 
-            {/* Search & Sort */}
-            <div className="flex flex-col sm:flex-row items-center gap-3">
-              {/* Search input */}
-              <div className="relative w-full sm:w-64">
-                <input
-                  type="text"
-                  placeholder="Search by title, description or address"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-10 pl-9 pr-8 rounded-xl glass-input text-xs"
-                />
-                <svg
-                  className="w-4 h-4 text-gray-400 absolute left-3 top-3"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            {/* Search & Sort (Only shown when browsing campaign cards) */}
+            {activeTab !== "stats" && (
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                {/* Search input */}
+                <div className="relative w-full sm:w-64">
+                  <input
+                    type="text"
+                    placeholder="Search by title, description or address"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full h-10 pl-9 pr-8 rounded-xl glass-input text-xs"
                   />
-                </svg>
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-2.5 top-2.5 text-gray-400 hover:text-white p-0.5"
+                  <svg
+                    className="w-4 h-4 text-gray-400 absolute left-3 top-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    ✕
-                  </button>
-                )}
-              </div>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-2.5 top-2.5 text-gray-400 hover:text-white p-0.5"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
 
-              {/* Sort selector */}
-              <div className="w-full sm:w-auto flex items-center gap-2">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full sm:w-auto h-10 px-3 rounded-xl glass-input text-xs font-medium"
-                >
-                  <option value="newest" className="bg-gray-900 text-white">
-                    Sort: Newest
-                  </option>
-                  <option value="most_funded" className="bg-gray-900 text-white">
-                    Sort: Most Funded
-                  </option>
-                  <option value="target_high" className="bg-gray-900 text-white">
-                    Sort: Target (High to Low)
-                  </option>
-                  <option value="target_low" className="bg-gray-900 text-white">
-                    Sort: Target (Low to High)
-                  </option>
-                </select>
+                {/* Sort selector */}
+                <div className="w-full sm:w-auto flex items-center gap-2">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full sm:w-auto h-10 px-3 rounded-xl glass-input text-xs font-medium"
+                  >
+                    <option value="newest" className="bg-gray-900 text-white">
+                      Sort: Newest
+                    </option>
+                    <option value="most_funded" className="bg-gray-900 text-white">
+                      Sort: Most Funded
+                    </option>
+                    <option value="target_high" className="bg-gray-900 text-white">
+                      Sort: Target (High to Low)
+                    </option>
+                    <option value="target_low" className="bg-gray-900 text-white">
+                      Sort: Target (Low to High)
+                    </option>
+                  </select>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
-        {/* Dynamic Card Grid */}
+        {/* Tab View Switcher */}
         {loading ? (
           <div className="py-20 text-center space-y-4">
             <svg
@@ -296,9 +310,14 @@ const Index = () => {
               />
             </svg>
             <p className="text-sm font-medium text-gray-400">
-              Loading campaigns from blockchain...
+              Loading data from blockchain...
             </p>
           </div>
+        ) : activeTab === "stats" ? (
+          <StatsAnalytics
+            allCampaigns={allCampaigns}
+            onOpenCreateModal={() => setOpenCreateModal(true)}
+          />
         ) : (
           <Card
             title={
@@ -319,6 +338,7 @@ const Index = () => {
             setOpenModel={setOpenModel}
             setDonate={setDonateCampaign}
             address={currentAccount}
+            isMyTab={activeTab === "my"}
             onOpenCreateModal={() => setOpenCreateModal(true)}
           />
         )}

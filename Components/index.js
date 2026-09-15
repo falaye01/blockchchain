@@ -10,6 +10,7 @@ import Close from "./Close";
 import Arrow from "./Arrow";
 import NotificationToast from "./NotificationToast";
 import CreateCampaignModal from "./CreateCampaignModal";
+import StatsAnalytics from "./StatsAnalytics";
 
 export {
   NavBar,
@@ -24,4 +25,5 @@ export {
   Arrow,
   NotificationToast,
   CreateCampaignModal,
+  StatsAnalytics,
 };

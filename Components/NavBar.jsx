@@ -3,7 +3,7 @@ import { CrowdFundingContext } from "../Context/CrowdFunding";
 import Logo from "./Logo";
 
 const NavBar = ({ onOpenCreateModal, activeTab, setActiveTab }) => {
-  const { currentAccount, accountBalance, network, connectWallet, disconnectWallet, isLoading } =
+  const { currentAccount, accountBalance, connectWallet, disconnectWallet, isLoading } =
     useContext(CrowdFundingContext);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,6 +21,16 @@ const NavBar = ({ onOpenCreateModal, activeTab, setActiveTab }) => {
     { name: "My Campaigns", tab: "my" },
     { name: "Stats & Analytics", tab: "stats" },
   ];
+
+  const handleNavClick = (tab) => {
+    if (setActiveTab) setActiveTab(tab);
+    if (typeof window !== "undefined") {
+      const section = document.getElementById("campaigns-section");
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
 
   const formatAddress = (addr) => {
     if (!addr) return "";
@@ -52,7 +62,7 @@ const NavBar = ({ onOpenCreateModal, activeTab, setActiveTab }) => {
               {navLinks.map((item) => (
                 <button
                   key={item.tab}
-                  onClick={() => setActiveTab && setActiveTab(item.tab)}
+                  onClick={() => handleNavClick(item.tab)}
                   className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
                     activeTab === item.tab
                       ? "bg-brand-600 text-white shadow-md shadow-brand-600/30"
@@ -95,9 +105,9 @@ const NavBar = ({ onOpenCreateModal, activeTab, setActiveTab }) => {
                 >
                   <span>{formatAddress(currentAccount)}</span>
                   {copied ? (
-                    <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                    </svg>
+                    <span className="text-[10px] text-emerald-400 font-sans font-medium">
+                      Copied
+                    </span>
                   ) : (
                     <svg className="w-3.5 h-3.5 opacity-60 hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -156,7 +166,7 @@ const NavBar = ({ onOpenCreateModal, activeTab, setActiveTab }) => {
                 <button
                   key={item.tab}
                   onClick={() => {
-                    if (setActiveTab) setActiveTab(item.tab);
+                    handleNavClick(item.tab);
                     setIsMenuOpen(false);
                   }}
                   className={`text-left px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
