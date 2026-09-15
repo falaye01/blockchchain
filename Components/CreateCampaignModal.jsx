@@ -50,13 +50,13 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
         {/* Modal Header */}
         <div className="mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold uppercase tracking-wider mb-2">
-            🚀 New Campaign
+            New Campaign
           </div>
           <h2 className="text-2xl font-bold tracking-tight text-white">
-            Launch Your Project
+            Start a Campaign
           </h2>
           <p className="text-sm text-gray-400 mt-1">
-            Raise funds directly on the blockchain with zero middlemen.
+            Publish your project directly to the blockchain to start receiving support.
           </p>
         </div>
 
@@ -69,7 +69,7 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
             <input
               type="text"
               required
-              placeholder="e.g. Next-Gen Decentralized Storage"
+              placeholder="e.g. Open Source Developer Workspace"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="w-full h-11 px-4 rounded-xl glass-input text-sm"
@@ -83,7 +83,7 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
             <textarea
               required
               rows="3"
-              placeholder="Describe your vision, roadmap, and how funds will be utilized..."
+              placeholder="Describe your initiative and how the funds will be used..."
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="w-full px-4 py-2.5 rounded-xl glass-input text-sm resize-none"

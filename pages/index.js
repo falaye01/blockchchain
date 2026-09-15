@@ -26,7 +26,7 @@ const Index = () => {
   const [openCreateModal, setOpenCreateModal] = useState(false);
 
   // Filters and Search State
-  const [activeTab, setActiveTab] = useState("all"); // 'all' | 'my' | 'active' | 'funded'
+  const [activeTab, setActiveTab] = useState("all"); // 'all' | 'active' | 'funded' | 'my'
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest"); // 'newest' | 'target_high' | 'target_low' | 'most_funded'
   const [loading, setLoading] = useState(true);
@@ -159,13 +159,13 @@ const Index = () => {
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setActiveTab("all")}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                   activeTab === "all"
                     ? "bg-brand-600 text-white shadow-md shadow-brand-600/30"
                     : "bg-white/5 text-gray-300 hover:bg-white/10"
                 }`}
               >
-                <span>Explore All</span>
+                <span>All Projects</span>
                 <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[10px]">
                   {allCampaigns.length}
                 </span>
@@ -173,13 +173,13 @@ const Index = () => {
 
               <button
                 onClick={() => setActiveTab("active")}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                   activeTab === "active"
                     ? "bg-brand-600 text-white shadow-md shadow-brand-600/30"
                     : "bg-white/5 text-gray-300 hover:bg-white/10"
                 }`}
               >
-                <span>🔥 Active</span>
+                <span>Active</span>
                 <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[10px]">
                   {activeCount}
                 </span>
@@ -187,13 +187,13 @@ const Index = () => {
 
               <button
                 onClick={() => setActiveTab("funded")}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                   activeTab === "funded"
                     ? "bg-brand-600 text-white shadow-md shadow-brand-600/30"
                     : "bg-white/5 text-gray-300 hover:bg-white/10"
                 }`}
               >
-                <span>🎯 Goal Reached</span>
+                <span>Goal Reached</span>
                 <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[10px]">
                   {fundedCount}
                 </span>
@@ -201,13 +201,13 @@ const Index = () => {
 
               <button
                 onClick={() => setActiveTab("my")}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
                   activeTab === "my"
                     ? "bg-brand-600 text-white shadow-md shadow-brand-600/30"
                     : "bg-white/5 text-gray-300 hover:bg-white/10"
                 }`}
               >
-                <span>👤 My Campaigns</span>
+                <span>My Campaigns</span>
                 <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[10px]">
                   {myCount}
                 </span>
@@ -220,7 +220,7 @@ const Index = () => {
               <div className="relative w-full sm:w-64">
                 <input
                   type="text"
-                  placeholder="Search campaigns..."
+                  placeholder="Search by title, description or address"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full h-10 pl-9 pr-8 rounded-xl glass-input text-xs"
@@ -253,7 +253,7 @@ const Index = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full sm:w-auto h-10 px-3 rounded-xl glass-input text-xs font-semibold"
+                  className="w-full sm:w-auto h-10 px-3 rounded-xl glass-input text-xs font-medium"
                 >
                   <option value="newest" className="bg-gray-900 text-white">
                     Sort: Newest
@@ -295,8 +295,8 @@ const Index = () => {
                 d="M4 12a8 8 0 018-8v8H4z"
               />
             </svg>
-            <p className="text-sm font-semibold text-gray-400">
-              Querying Ethereum Blockchain...
+            <p className="text-sm font-medium text-gray-400">
+              Loading campaigns from blockchain...
             </p>
           </div>
         ) : (
@@ -305,15 +305,15 @@ const Index = () => {
               activeTab === "my"
                 ? "My Created Campaigns"
                 : activeTab === "active"
-                ? "Active Fundraising Campaigns"
+                ? "Active Campaigns"
                 : activeTab === "funded"
-                ? "Fully Funded Campaigns"
+                ? "Funded Campaigns"
                 : "All Listed Campaigns"
             }
             subtitle={
               activeTab === "my"
-                ? "Manage and monitor funding status for campaigns you initiated."
-                : "Explore transparent initiatives backed by smart contract security."
+                ? "Track and manage the progress of your projects."
+                : "Explore transparent initiatives backed directly by contributors."
             }
             allCampaign={displayedCampaigns}
             setOpenModel={setOpenModel}

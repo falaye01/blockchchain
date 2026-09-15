@@ -21,7 +21,7 @@ const Card = ({
   const formatDaysLeft = (deadlineSec) => {
     const nowSec = Math.floor(Date.now() / 1000);
     const diffSec = deadlineSec - nowSec;
-    if (diffSec <= 0) return { text: "Expired", isExpired: true };
+    if (diffSec <= 0) return { text: "Ended", isExpired: true };
     const days = Math.floor(diffSec / (3600 * 24));
     const hours = Math.floor((diffSec % (3600 * 24)) / 3600);
     if (days > 0) return { text: `${days}d ${hours}h left`, isExpired: false };
@@ -39,15 +39,15 @@ const Card = ({
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
             {title}
           </h2>
           {subtitle && (
             <p className="text-sm text-gray-400 mt-1">{subtitle}</p>
           )}
         </div>
-        <div className="text-xs font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 self-start sm:self-auto">
-          {allCampaign.length} {allCampaign.length === 1 ? "Campaign" : "Campaigns"} Found
+        <div className="text-xs font-medium text-gray-400 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 self-start sm:self-auto">
+          {allCampaign.length} {allCampaign.length === 1 ? "Campaign" : "Campaigns"}
         </div>
       </div>
 
@@ -55,21 +55,18 @@ const Card = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {allCampaign.length === 0 ? (
           <div className="col-span-full glass-panel rounded-3xl p-12 text-center border border-white/5">
-            <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl mx-auto mb-4">
-              ✨
-            </div>
-            <h3 className="text-lg font-bold text-white mb-1">
-              No Campaigns Found
+            <h3 className="text-lg font-semibold text-white mb-2">
+              No campaigns found
             </h3>
             <p className="text-sm text-gray-400 max-w-md mx-auto mb-6">
-              There are currently no campaigns matching your filter. Be the pioneer and launch the very first one!
+              There are no projects in this category yet. You can be the first to start a campaign.
             </p>
             {onOpenCreateModal && (
               <button
                 onClick={onOpenCreateModal}
-                className="px-6 py-2.5 rounded-xl text-xs font-bold text-white gradient-btn shadow-lg"
+                className="px-6 py-2.5 rounded-xl text-xs font-semibold text-white gradient-btn shadow-lg"
               >
-                Launch a Campaign
+                Start a Campaign
               </button>
             )}
           </div>
@@ -98,26 +95,26 @@ const Card = ({
                       title="Click to copy creator address"
                       className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] font-mono text-gray-300 transition-colors border border-white/5"
                     >
-                      <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
                       <span>{formatAddress(campaign.owner)}</span>
                       {copiedId === campaign.pId && (
-                        <span className="text-[10px] text-emerald-400 font-sans font-bold">
-                          Copied!
+                        <span className="text-[10px] text-emerald-400 font-sans font-medium">
+                          Copied
                         </span>
                       )}
                     </button>
 
                     {/* Status Pill */}
                     {isGoalReached ? (
-                      <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold uppercase tracking-wider">
-                        Goal Reached 🎯
+                      <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-semibold uppercase tracking-wider">
+                        Goal Reached
                       </span>
                     ) : timeLeft.isExpired ? (
-                      <span className="px-2.5 py-1 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 text-[10px] font-bold uppercase tracking-wider">
+                      <span className="px-2.5 py-1 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 text-[10px] font-semibold uppercase tracking-wider">
                         Ended
                       </span>
                     ) : (
-                      <span className="px-2.5 py-1 rounded-lg bg-brand-500/15 border border-brand-500/30 text-brand-300 text-[10px] font-bold uppercase tracking-wider">
+                      <span className="px-2.5 py-1 rounded-lg bg-brand-500/15 border border-brand-500/30 text-brand-300 text-[10px] font-semibold uppercase tracking-wider">
                         {timeLeft.text}
                       </span>
                     )}
@@ -135,8 +132,8 @@ const Card = ({
 
                   {/* Progress Bar */}
                   <div className="space-y-1.5 mb-5">
-                    <div className="flex justify-between text-xs font-semibold">
-                      <span className="text-gray-400">Funded</span>
+                    <div className="flex justify-between text-xs font-medium">
+                      <span className="text-gray-400">Progress</span>
                       <span className="text-brand-300">{campaign.percentage}%</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
@@ -150,18 +147,18 @@ const Card = ({
                   {/* Target & Raised Stats */}
                   <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
                     <div>
-                      <p className="text-[10px] uppercase font-bold text-gray-400">
+                      <p className="text-[10px] uppercase font-semibold text-gray-400">
                         Raised
                       </p>
-                      <p className="text-sm font-extrabold text-white mt-0.5">
+                      <p className="text-sm font-bold text-white mt-0.5">
                         {parseFloat(campaign.amountCollected).toFixed(3)} ETH
                       </p>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase font-bold text-gray-400">
+                      <p className="text-[10px] uppercase font-semibold text-gray-400">
                         Target Goal
                       </p>
-                      <p className="text-sm font-extrabold text-gray-300 mt-0.5">
+                      <p className="text-sm font-bold text-gray-300 mt-0.5">
                         {parseFloat(campaign.target).toFixed(3)} ETH
                       </p>
                     </div>
@@ -171,8 +168,8 @@ const Card = ({
                 {/* Card Action Footer */}
                 <div className="p-4 px-6 border-t border-white/5 bg-black/20 flex items-center gap-3">
                   {isOwner ? (
-                    <div className="w-full py-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-bold text-center">
-                      👤 Your Campaign
+                    <div className="w-full py-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold text-center">
+                      Your Campaign
                     </div>
                   ) : timeLeft.isExpired ? (
                     <button
@@ -180,9 +177,9 @@ const Card = ({
                         setDonate(campaign);
                         setOpenModel(true);
                       }}
-                      className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 text-xs font-bold transition-colors"
+                      className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 text-xs font-semibold transition-colors"
                     >
-                      View Donors ({campaign.donators?.length || 0})
+                      View Contributors ({campaign.donators?.length || 0})
                     </button>
                   ) : (
                     <button
@@ -190,9 +187,9 @@ const Card = ({
                         setDonate(campaign);
                         setOpenModel(true);
                       }}
-                      className="w-full py-2.5 rounded-xl text-xs font-bold text-white gradient-btn shadow-md hover:shadow-brand-500/20 transition-all flex items-center justify-center gap-2"
+                      className="w-full py-2.5 rounded-xl text-xs font-semibold text-white gradient-btn shadow-md hover:shadow-brand-500/20 transition-all flex items-center justify-center gap-2"
                     >
-                      <span>Back this Project</span>
+                      <span>Back this project</span>
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                       </svg>

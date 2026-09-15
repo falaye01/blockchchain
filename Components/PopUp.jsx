@@ -80,7 +80,7 @@ const PopUp = ({ setOpenModel, donate, donateFunction, getDonations }) => {
         {/* Modal Header */}
         <div className="mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold uppercase tracking-wider mb-2">
-            🤝 Campaign Contribution
+            Contribute to Project
           </div>
           <h2 className="text-2xl font-bold text-white tracking-tight">
             {donate?.title}
@@ -93,7 +93,7 @@ const PopUp = ({ setOpenModel, donate, donateFunction, getDonations }) => {
         {/* Campaign Metrics Summary */}
         <div className="p-4 rounded-2xl bg-white/5 border border-white/5 mb-6 space-y-3">
           <div className="flex justify-between items-center text-xs">
-            <span className="text-gray-400 font-semibold">Funded Progress</span>
+            <span className="text-gray-400 font-medium">Progress</span>
             <span className="text-brand-300 font-bold">{donate?.percentage}%</span>
           </div>
           <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
@@ -119,7 +119,7 @@ const PopUp = ({ setOpenModel, donate, donateFunction, getDonations }) => {
           <form onSubmit={handleDonateSubmit} className="mb-6 space-y-4">
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <label className="text-xs font-bold text-gray-300 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider">
                   Contribution Amount
                 </label>
                 {currentAccount && (
@@ -140,7 +140,7 @@ const PopUp = ({ setOpenModel, donate, donateFunction, getDonations }) => {
                   onChange={(e) => setAmount(e.target.value)}
                   className="w-full h-12 pl-4 pr-16 rounded-xl glass-input text-base font-semibold"
                 />
-                <span className="absolute right-4 top-3.5 text-xs font-extrabold text-brand-400">
+                <span className="absolute right-4 top-3.5 text-xs font-bold text-brand-400">
                   ETH
                 </span>
               </div>
@@ -153,7 +153,7 @@ const PopUp = ({ setOpenModel, donate, donateFunction, getDonations }) => {
                   key={val}
                   type="button"
                   onClick={() => setAmount(val)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                     amount === val
                       ? "bg-brand-600 border-brand-500 text-white"
                       : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10"
@@ -168,7 +168,7 @@ const PopUp = ({ setOpenModel, donate, donateFunction, getDonations }) => {
             <button
               type="submit"
               disabled={isLoading || !amount || parseFloat(amount) <= 0}
-              className="w-full h-12 rounded-xl text-sm font-bold text-white gradient-btn shadow-lg shadow-brand-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full h-12 rounded-xl text-sm font-semibold text-white gradient-btn shadow-lg shadow-brand-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -176,12 +176,12 @@ const PopUp = ({ setOpenModel, donate, donateFunction, getDonations }) => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                   </svg>
-                  <span>Processing Donation...</span>
+                  <span>Confirming transaction...</span>
                 </>
               ) : currentAccount ? (
-                `Confirm & Donate ${amount ? `${amount} ETH` : ""}`
+                `Contribute ${amount ? `${amount} ETH` : ""}`
               ) : (
-                "Connect Wallet to Donate"
+                "Connect Wallet to Contribute"
               )}
             </button>
           </form>
@@ -190,10 +190,10 @@ const PopUp = ({ setOpenModel, donate, donateFunction, getDonations }) => {
         {/* Donators History Section */}
         <div className="pt-5 border-t border-white/10">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-xs font-bold text-gray-300 uppercase tracking-wider">
-              Recent Donors & Backers ({allDonationData.length})
+            <h4 className="text-xs font-semibold text-gray-300 uppercase tracking-wider">
+              Contributors ({allDonationData.length})
             </h4>
-            <span className="text-[10px] text-gray-500">Immutable on-chain history</span>
+            <span className="text-[10px] text-gray-500">Recorded on-chain</span>
           </div>
 
           {loadingDonations ? (
@@ -202,7 +202,7 @@ const PopUp = ({ setOpenModel, donate, donateFunction, getDonations }) => {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
-              Loading donator records...
+              Loading contributor list...
             </div>
           ) : allDonationData.length > 0 ? (
             <div className="space-y-2 max-h-44 overflow-y-auto pr-1">
@@ -212,7 +212,7 @@ const PopUp = ({ setOpenModel, donate, donateFunction, getDonations }) => {
                   className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5 text-xs"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-brand-500/20 text-brand-300 flex items-center justify-center text-[10px] font-bold">
+                    <span className="w-5 h-5 rounded-full bg-brand-500/20 text-brand-300 flex items-center justify-center text-[10px] font-medium">
                       {index + 1}
                     </span>
                     <button
@@ -221,18 +221,14 @@ const PopUp = ({ setOpenModel, donate, donateFunction, getDonations }) => {
                       className="font-mono text-gray-300 hover:text-white flex items-center gap-1.5"
                     >
                       <span>{formatAddress(item.donator)}</span>
-                      {copiedAddress === item.donator ? (
-                        <span className="text-[9px] text-emerald-400 font-sans font-bold">
-                          Copied!
+                      {copiedAddress === item.donator && (
+                        <span className="text-[9px] text-emerald-400 font-sans font-medium">
+                          Copied
                         </span>
-                      ) : (
-                        <svg className="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
                       )}
                     </button>
                   </div>
-                  <div className="font-extrabold text-emerald-400 font-mono">
+                  <div className="font-bold text-emerald-400 font-mono">
                     +{parseFloat(item.donation).toFixed(4)} ETH
                   </div>
                 </div>
@@ -240,7 +236,7 @@ const PopUp = ({ setOpenModel, donate, donateFunction, getDonations }) => {
             </div>
           ) : (
             <div className="p-6 text-center text-xs text-gray-400 bg-white/5 rounded-xl border border-white/5">
-              🌟 No donations yet. Be the pioneer backer of this campaign!
+              No contributions yet. Be the first to back this project.
             </div>
           )}
         </div>

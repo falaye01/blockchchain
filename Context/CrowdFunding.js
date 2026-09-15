@@ -130,7 +130,7 @@ export const CrowdFundingProvider = ({ children }) => {
       const ethereum = getInjectedEthereum();
 
       if (!ethereum) {
-        notify("error", "MetaMask extension was not detected. Please make sure MetaMask is installed and enabled in your browser.");
+        notify("error", "MetaMask was not detected. Please install or enable MetaMask in your browser.");
         return;
       }
 
@@ -142,11 +142,11 @@ export const CrowdFundingProvider = ({ children }) => {
         accounts = await ethereum.request({ method: "eth_requestAccounts" });
       } catch (reqErr) {
         if (reqErr.code === -32002) {
-          notify("info", "MetaMask already has a pending connection prompt! Please click the MetaMask icon in your browser toolbar to approve.");
+          notify("info", "MetaMask has a pending request. Click the MetaMask extension icon to approve.");
           return;
         }
         if (reqErr.code === 4001) {
-          notify("info", "Connection request was rejected in MetaMask.");
+          notify("info", "Connection request was cancelled in MetaMask.");
           return;
         }
         throw reqErr;
@@ -161,7 +161,7 @@ export const CrowdFundingProvider = ({ children }) => {
         setNetwork(net);
 
         await updateBalance(account);
-        notify("success", `Wallet connected: ${account.slice(0, 6)}...${account.slice(-4)}`);
+        notify("success", `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`);
         triggerRefresh();
       }
     } catch (error) {
@@ -190,7 +190,7 @@ export const CrowdFundingProvider = ({ children }) => {
 
       const parsedAmount = parseFloat(amount);
       if (isNaN(parsedAmount) || parsedAmount <= 0) {
-        notify("error", "Target amount must be a positive number.");
+        notify("error", "Target amount must be greater than zero.");
         return false;
       }
 
@@ -200,13 +200,13 @@ export const CrowdFundingProvider = ({ children }) => {
       const nowSeconds = Math.floor(Date.now() / 1000);
 
       if (isNaN(deadlineSeconds) || deadlineSeconds <= nowSeconds) {
-        notify("error", "Deadline must be a future date and time.");
+        notify("error", "Deadline must be in the future.");
         return false;
       }
 
       const ethereum = getInjectedEthereum();
       if (!ethereum) {
-        notify("error", "Please install and connect MetaMask to create a campaign.");
+        notify("error", "Please connect MetaMask to create a campaign.");
         return false;
       }
 
@@ -228,17 +228,17 @@ export const CrowdFundingProvider = ({ children }) => {
         deadlineSeconds
       );
 
-      notify("info", "Transaction submitted. Mining block on blockchain...", 0);
+      notify("info", "Transaction submitted. Waiting for confirmation...", 0);
       await tx.wait();
 
-      notify("success", "🎉 Campaign created successfully!");
+      notify("success", "Campaign created successfully.");
       if (currentAccount) await updateBalance(currentAccount);
       triggerRefresh();
       return true;
     } catch (error) {
       console.error("Error creating campaign:", error);
       if (error?.code === 4001 || error?.code === "ACTION_REJECTED") {
-        notify("info", "Transaction was rejected in MetaMask.");
+        notify("info", "Transaction was cancelled in MetaMask.");
         return false;
       }
       const errorMsg =
@@ -309,18 +309,18 @@ export const CrowdFundingProvider = ({ children }) => {
   const donate = async (pId, amount) => {
     try {
       if (!amount || parseFloat(amount) <= 0) {
-        notify("error", "Please enter a valid donation amount in ETH.");
+        notify("error", "Please enter a valid contribution amount.");
         return false;
       }
 
       const ethereum = getInjectedEthereum();
       if (!ethereum) {
-        notify("error", "Please connect MetaMask to donate.");
+        notify("error", "Please connect MetaMask to make a contribution.");
         return false;
       }
 
       setIsLoading(true);
-      notify("info", "Please confirm donation in your MetaMask wallet...");
+      notify("info", "Please confirm transaction in your MetaMask wallet...");
 
       const provider = new ethers.providers.Web3Provider(ethereum, "any");
       const signer = provider.getSigner();
@@ -330,21 +330,21 @@ export const CrowdFundingProvider = ({ children }) => {
         value: ethers.utils.parseEther(amount.toString()),
       });
 
-      notify("info", "Donation submitted. Mining transaction...", 0);
+      notify("info", "Transaction submitted. Waiting for confirmation...", 0);
       await tx.wait();
 
-      notify("success", `🎉 Thank you! Successfully donated ${amount} ETH.`);
+      notify("success", `Thank you! Successfully contributed ${amount} ETH.`);
       if (currentAccount) await updateBalance(currentAccount);
       triggerRefresh();
       return true;
     } catch (error) {
       console.error("Donation failed:", error);
       if (error?.code === 4001 || error?.code === "ACTION_REJECTED") {
-        notify("info", "Donation was rejected in MetaMask.");
+        notify("info", "Transaction was cancelled in MetaMask.");
         return false;
       }
       const errorMsg =
-        error?.reason || error?.data?.message || error?.message || "Donation transaction failed.";
+        error?.reason || error?.data?.message || error?.message || "Contribution transaction failed.";
       notify("error", errorMsg);
       return false;
     } finally {

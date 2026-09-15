@@ -1,78 +1,78 @@
-# CryptoFund — Decentralized Web3 Crowdfunding Protocol
+# CryptoFund
 
-A decentralized, trustless, and peer-to-peer crowdfunding platform built on Ethereum smart contracts. CryptoFund enables innovators and project creators to raise capital directly from a global pool of backers with instant P2P settlement and zero platform fees.
-
----
-
-## ✨ Features
-
-- **Direct P2P Settlement**: 100% of contributed funds are transferred directly to the campaign creator's wallet with zero intermediary fees.
-- **Security & Integrity**: Smart contracts follow the Checks-Effects-Interactions pattern, emit indexed events, and enforce atomic transaction reverts on failed transfers.
-- **Live Campaign Explorer**: Real-time search across titles, descriptions, and creator addresses with category filtering (*Explore All*, *🔥 Active*, *🎯 Goal Reached*, *👤 My Campaigns*).
-- **Interactive Backing Experience**: Fast donation modal with preset ETH increments (`+0.01`, `+0.05`, `+0.1`, `+0.5`, `+1.0 ETH`), wallet balance validation, and live donor ledger.
-- **Campaign Creation**: Intuitive launch form with input validations, minimum future date checking, and transaction lifecycle spinners.
-- **Multi-Account Reactivity**: Automatically updates balances and UI state when switching accounts or networks in MetaMask.
-- **Comprehensive Testing**: Automated Hardhat unit tests verifying deployment, campaign creation, donations, edge cases, and queries.
+CryptoFund is an open, peer-to-peer crowdfunding platform built on Ethereum smart contracts. It enables project creators to raise funds directly from people around the world with instant settlement, clear terms, and zero intermediary fees.
 
 ---
 
-## 🛠️ Tech Stack
+## Features
 
-- **Smart Contract**: Solidity `^0.8.18`
-- **Development & Testing Framework**: Hardhat, Ethers.js v5, Chai
-- **Frontend Framework**: Next.js 13, React 18
-- **Styling & Design System**: Tailwind CSS, Dark Glassmorphism, Vanilla CSS
+- **Direct Transfers**: 100% of contributed funds go directly to the campaign creator with no middleman or platform cut.
+- **Contract Safety**: Built with standard security patterns, events for every transaction, and atomic transaction reverts if a transfer fails.
+- **Campaign Discovery**: Search campaigns by title, description, or creator address, with filters for active, funded, and personal campaigns.
+- **Simple Contributions**: Clear donation flow with suggested contribution amounts, wallet balance checks, and a transparent list of recent contributors.
+- **Easy Campaign Creation**: Clean form with validation for realistic targets and future deadlines.
+- **Wallet Reactivity**: Instant updates to your balance and views whenever you switch accounts in MetaMask.
+- **Automated Tests**: Comprehensive test suite covering contract creation, donations, queries, and boundary checks.
 
 ---
 
-## 📁 Project Structure
+## Tech Stack
+
+- **Smart Contracts**: Solidity 0.8.18
+- **Tooling & Tests**: Hardhat, Ethers.js v5, Chai
+- **Frontend**: Next.js 13, React 18
+- **Styling**: Tailwind CSS, Vanilla CSS
+
+---
+
+## Project Structure
 
 ```text
 Crowdfunding-defi/
-├── contracts/               # Solidity Smart Contracts
-│   └── CrowdFunding.sol     # Main Crowdfunding Contract
+├── contracts/               # Smart contracts
+│   └── CrowdFunding.sol     # Core crowdfunding logic
 ├── scripts/                 # Deployment scripts
 │   └── deploy.js            # Hardhat deployment script
-├── test/                    # Hardhat Automated Unit Tests
-│   └── CrowdFunding.test.js # Unit test suite
-├── Context/                 # React Context & Web3 State
-│   ├── CrowdFunding.js      # Contract interaction & provider logic
-│   └── constants.js         # Contract ABI & address configuration
-├── Components/              # UI Components
-│   ├── NavBar.jsx           # Header with wallet connection & balance pill
-│   ├── Hero.jsx             # Hero section with live aggregate stats
-│   ├── Card.jsx             # Campaign cards with progress bars & countdowns
-│   ├── PopUp.jsx            # Donation modal & donor history
-│   ├── CreateCampaignModal.jsx # Dedicated campaign creation modal
-│   ├── NotificationToast.jsx   # Real-time transaction feedback toast
-│   └── Footer.jsx           # Ecosystem footer
-├── pages/                   # Next.js Pages
-│   ├── _app.js              # Global provider & layout wrapper
-│   └── index.js             # Main dashboard page
+├── test/                    # Automated tests
+│   └── CrowdFunding.test.js # Test suite for all contract methods
+├── Context/                 # State management & Web3 provider
+│   ├── CrowdFunding.js      # Contract interactions and event listeners
+│   └── constants.js         # Contract address and ABI definitions
+├── Components/              # UI components
+│   ├── NavBar.jsx           # Header with account status
+│   ├── Hero.jsx             # Overview and platform metrics
+│   ├── Card.jsx             # Campaign cards and progress meters
+│   ├── PopUp.jsx            # Contribution modal and donor ledger
+│   ├── CreateCampaignModal.jsx # Project launch modal
+│   ├── NotificationToast.jsx   # Status updates and confirmations
+│   └── Footer.jsx           # Footer with contract address
+├── pages/                   # Next.js pages
+│   ├── _app.js              # Application wrapper
+│   └── index.js             # Main dashboard
 └── styles/
-    └── globals.css          # Design system & glassmorphism tokens
+    └── globals.css          # Styling and theme definitions
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18 or higher recommended)
-- [MetaMask](https://metamask.io/) browser extension
+- Node.js (v18 or higher recommended)
+- MetaMask browser extension
 
 ---
 
 ### Installation
 
-1. **Clone the repository**:
+1. Clone the repository:
    ```bash
    git clone https://github.com/falaye01/blockchchain.git
    cd blockchchain
    ```
 
-2. **Install dependencies**:
+2. Install dependencies:
    ```bash
    npm install
    ```
@@ -81,17 +81,17 @@ Crowdfunding-defi/
 
 ### Running Locally
 
-1. **Start the local Hardhat blockchain node**:
+1. Start a local blockchain node:
    ```bash
    npx hardhat node
    ```
 
-2. **Deploy the smart contract to the local node** (in a separate terminal):
+2. Deploy the smart contract (in another terminal):
    ```bash
    npx hardhat run scripts/deploy.js --network localhost
    ```
 
-3. **Start the Next.js frontend**:
+3. Start the development server:
    ```bash
    npm run dev
    ```
@@ -100,20 +100,20 @@ Crowdfunding-defi/
 
 ---
 
-### 🦊 MetaMask Localhost Setup
+### MetaMask Setup for Local Testing
 
-1. Open **MetaMask** and select the **Localhost 8545** network (Chain ID `31337`).
-2. Import one of the pre-funded test private keys provided in the `npx hardhat node` terminal output:
+1. In MetaMask, switch to the **Localhost 8545** network (Chain ID: `31337`).
+2. Import any test private key generated by `npx hardhat node`, for example:
    ```text
    0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
    ```
-3. Connect your wallet on [http://localhost:3000](http://localhost:3000) to start creating and backing campaigns.
+3. Connect your wallet on [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## 🧪 Running Automated Tests
+## Running Tests
 
-Run the smart contract test suite with:
+Execute the automated test suite with:
 
 ```bash
 npx hardhat test
@@ -121,18 +121,18 @@ npx hardhat test
 
 ---
 
-## 📜 Smart Contract Interface
+## Smart Contract Functions
 
 | Function | Type | Description |
 | :--- | :--- | :--- |
-| `createCampaign(address, string, string, uint256, uint256)` | `public` | Creates a new crowdfunding campaign with target amount and deadline. |
-| `donateToCampaign(uint256)` | `public payable` | Contributes ETH to a campaign and transfers funds immediately to the owner. |
-| `getCampaigns()` | `public view` | Returns all created campaigns. |
-| `getDonators(uint256)` | `public view` | Returns the list of donators and donation amounts for a specific campaign. |
-| `getCampaign(uint256)` | `public view` | Returns details of a specific campaign by ID. |
+| `createCampaign(address, string, string, uint256, uint256)` | `public` | Creates a new campaign with a target amount and deadline. |
+| `donateToCampaign(uint256)` | `public payable` | Contributes ETH and sends it immediately to the campaign owner. |
+| `getCampaigns()` | `public view` | Returns all campaigns stored in the contract. |
+| `getDonators(uint256)` | `public view` | Returns addresses and amounts for past contributions. |
+| `getCampaign(uint256)` | `public view` | Retrieves all details of a single campaign. |
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](LICENSE).
