@@ -3,6 +3,21 @@ import { ethers } from "ethers";
 import { CrowdFundingABI, CrowdFundingAddress } from "./constants";
 import { resolveIpfsUrl, CATEGORY_DEFAULTIMAGES, CATEGORY_DEFAULT_IMAGES } from "./ipfs";
 
+const toSafeNumber = (bn, fallback = 0) => {
+  if (bn === undefined || bn === null) return fallback;
+  try {
+    if (typeof bn === "number") return bn;
+    if (bn._isBigNumber || typeof bn.toString === "function") {
+      const str = bn.toString();
+      const num = Number(str);
+      return Number.isSafeInteger(num) ? num : fallback;
+    }
+    return Number(bn) || fallback;
+  } catch (err) {
+    return fallback;
+  }
+};
+
 export const CrowdFundingContext = React.createContext();
 
 export const CrowdFundingProvider = ({ children }) => {
@@ -260,7 +275,7 @@ export const CrowdFundingProvider = ({ children }) => {
       const campaigns = await contract.getCampaigns();
 
       const parsedCampaigns = campaigns.map((campaign, i) => {
-        const deadlineSec = campaign.deadline.toNumber();
+        const deadlineSec = toSafeNumber(campaign.deadline);
         const targetEth = ethers.utils.formatEther(campaign.target.toString());
         const collectedEth = ethers.utils.formatEther(campaign.amountCollected.toString());
         const nowSec = Math.floor(Date.now() / 1000);
@@ -404,7 +419,7 @@ export const CrowdFundingProvider = ({ children }) => {
       const contract = getContract();
       const updates = await contract.getUpdates(pId);
       return (updates || []).map((u) => ({
-        timestamp: u.timestamp.toNumber(),
+        timestamp: toSafeNumber(u.timestamp),
         title: u.title,
         content: u.content,
       }));
@@ -460,7 +475,7 @@ export const CrowdFundingProvider = ({ children }) => {
       const comments = await contract.getComments(pId);
       return (comments || []).map((c) => ({
         commenter: c.commenter,
-        timestamp: c.timestamp.toNumber(),
+        timestamp: toSafeNumber(c.timestamp),
         message: c.message,
       }));
     } catch (error) {
