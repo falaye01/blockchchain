@@ -1,18 +1,22 @@
 import "../styles/globals.css";
-import NavBar from "../Components/NavBar";
-import Footer from "../Components/Footer";
-
-// ✅ Make sure this import path is correct!
 import { CrowdFundingProvider } from "../Context/CrowdFunding";
-console.log("CrowdFundingProvider:", CrowdFundingProvider);
+import { NotificationToast } from "../Components";
+import Head from "next/head";
 
-
-export default function App({ Component, pageProps }){
+export default function App({ Component, pageProps }) {
   return (
     <CrowdFundingProvider>
-      <NavBar />
+      <Head>
+        <title>CryptoFund — Decentralized Web3 Crowdfunding Protocol</title>
+        <meta
+          name="description"
+          content="Raise funds and back innovative projects directly on the blockchain with zero intermediaries and instant P2P settlement."
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Component {...pageProps} />
-      <Footer />
+      <NotificationToast />
     </CrowdFundingProvider>
   );
 }

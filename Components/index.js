@@ -8,5 +8,20 @@ import Menu from "./menu";
 import ICON from "./ICON";
 import Close from "./Close";
 import Arrow from "./Arrow";
+import NotificationToast from "./NotificationToast";
+import CreateCampaignModal from "./CreateCampaignModal";
 
-export { NavBar, Footer, Hero, Card, PopUp, Logo, Menu, ICON, Close, Arrow };
+export {
+  NavBar,
+  Footer,
+  Hero,
+  Card,
+  PopUp,
+  Logo,
+  Menu,
+  ICON,
+  Close,
+  Arrow,
+  NotificationToast,
+  CreateCampaignModal,
+};
