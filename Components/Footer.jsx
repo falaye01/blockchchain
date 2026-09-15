@@ -83,8 +83,12 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-[11px] text-gray-500">
-            © {currentYear} CryptoFund DeFi Protocol. Open-Source Web3 Architecture.
+          <p className="text-[11px] text-gray-400">
+            © {currentYear} CryptoFund Protocol • Built by{" "}
+            <span className="text-white font-semibold hover:text-brand-400 transition-colors">
+              ComradeDeveloper
+            </span>{" "}
+            • Open-Source Web3 Architecture
           </p>
           <div className="flex items-center gap-4 text-gray-400 text-xs">
             <span className="flex items-center gap-1.5">

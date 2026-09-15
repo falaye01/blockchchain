@@ -133,6 +133,12 @@ npx hardhat test
 
 ---
 
+## Author & Engineering
+
+Architected & developed by **ComradeDeveloper**.
+
+---
+
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is open-source and licensed under the [MIT License](LICENSE).
