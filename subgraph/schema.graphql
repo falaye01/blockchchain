@@ -1,0 +1,58 @@
+type Campaign @entity {
+  id: ID!
+  pId: BigInt!
+  owner: Bytes!
+  title: String!
+  description: String!
+  target: BigDecimal!
+  deadline: BigInt!
+  amountCollected: BigDecimal!
+  category: String!
+  image: String!
+  createdAt: BigInt!
+  isGoalReached: Boolean!
+  isExpired: Boolean!
+  donations: [Donation!]! @derivedFrom(field: "campaign")
+  updates: [ProjectUpdate!]! @derivedFrom(field: "campaign")
+  comments: [Comment!]! @derivedFrom(field: "campaign")
+}
+
+type Donation @entity {
+  id: ID!
+  campaign: Campaign!
+  donor: Bytes!
+  amount: BigDecimal!
+  timestamp: BigInt!
+  txHash: Bytes!
+}
+
+type ProjectUpdate @entity {
+  id: ID!
+  campaign: Campaign!
+  title: String!
+  content: String!
+  timestamp: BigInt!
+}
+
+type Comment @entity {
+  id: ID!
+  campaign: Campaign!
+  commenter: Bytes!
+  message: String!
+  timestamp: BigInt!
+}
+
+type Donor @entity {
+  id: ID!
+  address: Bytes!
+  totalDonated: BigDecimal!
+  donationsCount: BigInt!
+}
+
+type ProtocolMetric @entity {
+  id: ID!
+  totalRaised: BigDecimal!
+  totalCampaigns: BigInt!
+  totalDonations: BigInt!
+  updatedAt: BigInt!
+}

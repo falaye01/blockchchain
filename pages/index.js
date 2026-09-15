@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext, useMemo } from "react";
 import { CrowdFundingContext } from "../Context/CrowdFunding";
+import { PROJECT_CATEGORIES } from "../Context/ipfs";
 import {
   NavBar,
   Hero,
@@ -8,6 +9,7 @@ import {
   Footer,
   CreateCampaignModal,
   StatsAnalytics,
+  CampaignDetailsModal,
 } from "../Components";
 
 const Index = () => {
@@ -25,11 +27,13 @@ const Index = () => {
   const [openModel, setOpenModel] = useState(false);
   const [donateCampaign, setDonateCampaign] = useState(null);
   const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [selectedDetailsCampaign, setSelectedDetailsCampaign] = useState(null);
 
-  // Filters and Search State
+  // Filters, Categories, and Search State
   const [activeTab, setActiveTab] = useState("all"); // 'all' | 'active' | 'funded' | 'my' | 'stats'
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("newest"); // 'newest' | 'target_high' | 'target_low' | 'most_funded'
+  const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
 
   // Fetch campaign data
@@ -98,6 +102,13 @@ const Index = () => {
       list = list.filter((c) => c.isGoalReached);
     }
 
+    // Filter by Category
+    if (selectedCategory !== "All") {
+      list = list.filter(
+        (c) => (c.category || "General").toLowerCase() === selectedCategory.toLowerCase()
+      );
+    }
+
     // Filter by Search Query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
@@ -105,7 +116,8 @@ const Index = () => {
         (c) =>
           c.title?.toLowerCase().includes(q) ||
           c.description?.toLowerCase().includes(q) ||
-          c.owner?.toLowerCase().includes(q)
+          c.owner?.toLowerCase().includes(q) ||
+          c.category?.toLowerCase().includes(q)
       );
     }
 
@@ -124,7 +136,7 @@ const Index = () => {
     }
 
     return list;
-  }, [allCampaigns, activeTab, searchQuery, sortBy, currentAccount]);
+  }, [allCampaigns, activeTab, selectedCategory, searchQuery, sortBy, currentAccount]);
 
   const activeCount = useMemo(
     () => allCampaigns.filter((c) => !c.isExpired && !c.isGoalReached).length,
@@ -135,6 +147,8 @@ const Index = () => {
     [allCampaigns]
   );
   const myCount = useMemo(() => userCampaigns.length, [userCampaigns]);
+
+  const allCategoriesList = ["All", ...PROJECT_CATEGORIES];
 
   return (
     <div className="min-h-screen bg-[#0b0f19] text-gray-100 bg-mesh selection:bg-brand-500 selection:text-white">
@@ -156,7 +170,7 @@ const Index = () => {
         {/* Controls Bar: Tabs, Search, Sort */}
         <div className="glass-panel rounded-2xl p-4 sm:p-5 mb-8 border border-white/10 space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            {/* Tabs */}
+            {/* Status Tabs */}
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setActiveTab("all")}
@@ -226,14 +240,13 @@ const Index = () => {
               </button>
             </div>
 
-            {/* Search & Sort (Only shown when browsing campaign cards) */}
+            {/* Search & Sort */}
             {activeTab !== "stats" && (
               <div className="flex flex-col sm:flex-row items-center gap-3">
-                {/* Search input */}
                 <div className="relative w-full sm:w-64">
                   <input
                     type="text"
-                    placeholder="Search by title, description or address"
+                    placeholder="Search title, category, address..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full h-10 pl-9 pr-8 rounded-xl glass-input text-xs"
@@ -261,7 +274,6 @@ const Index = () => {
                   )}
                 </div>
 
-                {/* Sort selector */}
                 <div className="w-full sm:w-auto flex items-center gap-2">
                   <select
                     value={sortBy}
@@ -285,6 +297,28 @@ const Index = () => {
               </div>
             )}
           </div>
+
+          {/* Category Filter Chips (Only when browsing campaigns) */}
+          {activeTab !== "stats" && (
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-2 border-t border-white/5 scrollbar-none">
+              <span className="text-[11px] font-semibold text-gray-400 mr-2 shrink-0">
+                Categories:
+              </span>
+              {allCategoriesList.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                    selectedCategory === cat
+                      ? "bg-brand-500/25 border border-brand-500/50 text-brand-300 shadow-sm"
+                      : "bg-white/5 text-gray-400 hover:text-gray-200 hover:bg-white/10"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Tab View Switcher */}
@@ -327,6 +361,8 @@ const Index = () => {
                 ? "Active Campaigns"
                 : activeTab === "funded"
                 ? "Funded Campaigns"
+                : selectedCategory !== "All"
+                ? `${selectedCategory} Campaigns`
                 : "All Listed Campaigns"
             }
             subtitle={
@@ -340,9 +376,23 @@ const Index = () => {
             address={currentAccount}
             isMyTab={activeTab === "my"}
             onOpenCreateModal={() => setOpenCreateModal(true)}
+            onOpenDetails={(camp) => setSelectedDetailsCampaign(camp)}
           />
         )}
       </main>
+
+      {/* Campaign Details & Feed Modal */}
+      {selectedDetailsCampaign && (
+        <CampaignDetailsModal
+          campaign={selectedDetailsCampaign}
+          isOpen={!!selectedDetailsCampaign}
+          onClose={() => setSelectedDetailsCampaign(null)}
+          onOpenDonate={(camp) => {
+            setDonateCampaign(camp);
+            setOpenModel(true);
+          }}
+        />
+      )}
 
       {/* Donation Popup Modal */}
       {openModel && donateCampaign && (

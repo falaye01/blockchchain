@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { CrowdFundingContext } from "../Context/CrowdFunding";
+import { PROJECT_CATEGORIES, CATEGORY_DEFAULT_IMAGES } from "../Context/ipfs";
 
 const CreateCampaignModal = ({ isOpen, onClose }) => {
   const { createCampaign, isLoading, currentAccount, connectWallet } =
@@ -10,6 +11,8 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
     description: "",
     amount: "",
     deadline: "",
+    category: "Tech & AI",
+    image: "",
   });
 
   if (!isOpen) return null;
@@ -28,14 +31,26 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
 
     const success = await createCampaign(formData);
     if (success) {
-      setFormData({ title: "", description: "", amount: "", deadline: "" });
+      setFormData({
+        title: "",
+        description: "",
+        amount: "",
+        deadline: "",
+        category: "Tech & AI",
+        image: "",
+      });
       onClose();
     }
   };
 
+  const previewImage =
+    formData.image.trim() ||
+    CATEGORY_DEFAULT_IMAGES[formData.category] ||
+    CATEGORY_DEFAULT_IMAGES["General"];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-xl glass-modal rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/10 text-white">
+      <div className="relative w-full max-w-xl glass-modal rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/10 text-white max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -56,7 +71,7 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
             Start a Campaign
           </h2>
           <p className="text-sm text-gray-400 mt-1">
-            Publish your project directly to the blockchain to start receiving support.
+            Publish your project with media and category tags directly on the blockchain.
           </p>
         </div>
 
@@ -76,21 +91,24 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
-              Description *
-            </label>
-            <textarea
-              required
-              rows="3"
-              placeholder="Describe your initiative and how the funds will be used..."
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl glass-input text-sm resize-none"
-            ></textarea>
-          </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                Category *
+              </label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                className="w-full h-11 px-4 rounded-xl glass-input text-sm"
+              >
+                {PROJECT_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat} className="bg-gray-900 text-white">
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div>
               <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
                 Target Amount (ETH) *
@@ -111,20 +129,62 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
                 </span>
               </div>
             </div>
+          </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
-                Target Deadline *
-              </label>
-              <input
-                type="date"
-                required
-                min={minDateStr}
-                value={formData.deadline}
-                onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                className="w-full h-11 px-4 rounded-xl glass-input text-sm"
-              />
-            </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+              Target Deadline *
+            </label>
+            <input
+              type="date"
+              required
+              min={minDateStr}
+              value={formData.deadline}
+              onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+              className="w-full h-11 px-4 rounded-xl glass-input text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+              Banner Image (IPFS or URL)
+            </label>
+            <input
+              type="text"
+              placeholder="ipfs://... or https://..."
+              value={formData.image}
+              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+              className="w-full h-11 px-4 rounded-xl glass-input text-sm"
+            />
+            {previewImage && (
+              <div className="mt-2 w-full h-24 rounded-xl overflow-hidden border border-white/10 relative">
+                <img
+                  src={previewImage}
+                  alt="Banner preview"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = CATEGORY_DEFAULT_IMAGES["General"];
+                  }}
+                />
+                <span className="absolute bottom-1 right-2 bg-black/60 px-2 py-0.5 rounded text-[10px] text-gray-300">
+                  Preview
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+              Description *
+            </label>
+            <textarea
+              required
+              rows="3"
+              placeholder="Describe your initiative and how the funds will be used..."
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl glass-input text-sm resize-none"
+            ></textarea>
           </div>
 
           <div className="pt-4 flex items-center justify-end gap-3">

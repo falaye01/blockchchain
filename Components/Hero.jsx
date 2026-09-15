@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { CrowdFundingContext } from "../Context/CrowdFunding";
+import { PROJECT_CATEGORIES } from "../Context/ipfs";
 
 const Hero = ({ onOpenCreateModal, stats }) => {
   const { currentAccount, connectWallet, createCampaign, isLoading } =
@@ -10,9 +11,9 @@ const Hero = ({ onOpenCreateModal, stats }) => {
     description: "",
     amount: "",
     deadline: "",
+    category: "Tech & AI",
   });
 
-  // Calculate min deadline (tomorrow)
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const minDateStr = tomorrow.toISOString().split("T")[0];
@@ -26,7 +27,13 @@ const Hero = ({ onOpenCreateModal, stats }) => {
 
     const success = await createCampaign(campaign);
     if (success) {
-      setCampaign({ title: "", description: "", amount: "", deadline: "" });
+      setCampaign({
+        title: "",
+        description: "",
+        amount: "",
+        deadline: "",
+        category: "Tech & AI",
+      });
     }
   };
 
@@ -145,16 +152,19 @@ const Hero = ({ onOpenCreateModal, stats }) => {
 
                 <div>
                   <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1">
-                    Description
+                    Category
                   </label>
-                  <textarea
-                    required
-                    rows="2"
-                    placeholder="Tell supporters what you plan to accomplish..."
-                    value={campaign.description}
-                    onChange={(e) => setCampaign({ ...campaign, description: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl glass-input text-xs resize-none"
-                  ></textarea>
+                  <select
+                    value={campaign.category}
+                    onChange={(e) => setCampaign({ ...campaign, category: e.target.value })}
+                    className="w-full h-10 px-3 rounded-xl glass-input text-xs"
+                  >
+                    {PROJECT_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat} className="bg-gray-900 text-white">
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -187,6 +197,20 @@ const Hero = ({ onOpenCreateModal, stats }) => {
                       className="w-full h-10 px-3.5 rounded-xl glass-input text-xs"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    required
+                    rows="2"
+                    placeholder="Tell supporters what you plan to accomplish..."
+                    value={campaign.description}
+                    onChange={(e) => setCampaign({ ...campaign, description: e.target.value })}
+                    className="w-full px-3.5 py-2 rounded-xl glass-input text-xs resize-none"
+                  ></textarea>
                 </div>
 
                 <button

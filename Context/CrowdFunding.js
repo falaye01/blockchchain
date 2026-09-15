@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ethers } from "ethers";
 import { CrowdFundingABI, CrowdFundingAddress } from "./constants";
+import { resolveIpfsUrl, CATEGORY_DEFAULTIMAGES, CATEGORY_DEFAULT_IMAGES } from "./ipfs";
 
 export const CrowdFundingContext = React.createContext();
 
@@ -26,7 +27,7 @@ export const CrowdFundingProvider = ({ children }) => {
     }
   };
 
-  // Helper to safely get the injected MetaMask provider even if multiple extensions exist
+  // Helper to safely get the injected MetaMask provider
   const getInjectedEthereum = () => {
     if (typeof window === "undefined" || !window.ethereum) return null;
     if (window.ethereum.providers && Array.isArray(window.ethereum.providers)) {
@@ -136,7 +137,6 @@ export const CrowdFundingProvider = ({ children }) => {
 
       setIsLoading(true);
 
-      // Direct EIP-1193 request
       let accounts;
       try {
         accounts = await ethereum.request({ method: "eth_requestAccounts" });
@@ -180,11 +180,11 @@ export const CrowdFundingProvider = ({ children }) => {
     notify("info", "Wallet disconnected.");
   };
 
-  // Create Campaign
-  const createCampaign = async ({ title, description, amount, deadline }) => {
+  // Create Campaign (with Image & Category support)
+  const createCampaign = async ({ title, description, amount, deadline, image = "", category = "General" }) => {
     try {
       if (!title || !description || !amount || !deadline) {
-        notify("error", "Please fill in all campaign fields.");
+        notify("error", "Please fill in all required campaign fields.");
         return false;
       }
 
@@ -194,7 +194,6 @@ export const CrowdFundingProvider = ({ children }) => {
         return false;
       }
 
-      // Convert deadline to Unix timestamp in SECONDS
       const deadlineDate = new Date(deadline);
       const deadlineSeconds = Math.floor(deadlineDate.getTime() / 1000);
       const nowSeconds = Math.floor(Date.now() / 1000);
@@ -219,13 +218,17 @@ export const CrowdFundingProvider = ({ children }) => {
       const contract = getContract(signer);
 
       const targetInWei = ethers.utils.parseEther(amount.toString());
+      const cleanCategory = category || "General";
+      const cleanImage = image ? image.trim() : (CATEGORY_DEFAULT_IMAGES[cleanCategory] || "");
 
       const tx = await contract.createCampaign(
         userAddress,
         title.trim(),
         description.trim(),
         targetInWei,
-        deadlineSeconds
+        deadlineSeconds,
+        cleanImage,
+        cleanCategory
       );
 
       notify("info", "Transaction submitted. Waiting for confirmation...", 0);
@@ -263,6 +266,8 @@ export const CrowdFundingProvider = ({ children }) => {
         const nowSec = Math.floor(Date.now() / 1000);
         const isExpired = nowSec > deadlineSec;
         const isGoalReached = parseFloat(collectedEth) >= parseFloat(targetEth);
+        const categoryVal = campaign.category || "General";
+        const bannerImage = campaign.image ? resolveIpfsUrl(campaign.image) : (CATEGORY_DEFAULT_IMAGES[categoryVal] || CATEGORY_DEFAULT_IMAGES["General"]);
 
         return {
           pId: i,
@@ -272,6 +277,8 @@ export const CrowdFundingProvider = ({ children }) => {
           target: targetEth,
           deadline: deadlineSec,
           amountCollected: collectedEth,
+          image: bannerImage,
+          category: categoryVal,
           donators: campaign.donators || [],
           donations: (campaign.donations || []).map((d) => ethers.utils.formatEther(d)),
           isExpired,
@@ -290,7 +297,7 @@ export const CrowdFundingProvider = ({ children }) => {
     }
   };
 
-  // Fetch campaigns belonging to current connected user
+  // Fetch campaigns belonging to current user
   const getUserCampaigns = async () => {
     try {
       const allCampaigns = await getCampaigns();
@@ -349,6 +356,116 @@ export const CrowdFundingProvider = ({ children }) => {
       return false;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Post a project update (creator only)
+  const postUpdate = async (pId, title, content) => {
+    try {
+      if (!title || !content) {
+        notify("error", "Please enter both an update title and content.");
+        return false;
+      }
+
+      const ethereum = getInjectedEthereum();
+      if (!ethereum) {
+        notify("error", "Please connect MetaMask to post an update.");
+        return false;
+      }
+
+      setIsLoading(true);
+      notify("info", "Please confirm update transaction in MetaMask...");
+
+      const provider = new ethers.providers.Web3Provider(ethereum, "any");
+      const signer = provider.getSigner();
+      const contract = getContract(signer);
+
+      const tx = await contract.postUpdate(pId, title.trim(), content.trim());
+      notify("info", "Submitting update to blockchain...", 0);
+      await tx.wait();
+
+      notify("success", "Project update published on-chain.");
+      triggerRefresh();
+      return true;
+    } catch (error) {
+      console.error("Error posting update:", error);
+      const errorMsg =
+        error?.reason || error?.data?.message || error?.message || "Failed to publish update.";
+      notify("error", errorMsg);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Get project updates for a campaign
+  const getUpdates = async (pId) => {
+    try {
+      const contract = getContract();
+      const updates = await contract.getUpdates(pId);
+      return (updates || []).map((u) => ({
+        timestamp: u.timestamp.toNumber(),
+        title: u.title,
+        content: u.content,
+      }));
+    } catch (error) {
+      console.error(`Error fetching updates for campaign #${pId}:`, error);
+      return [];
+    }
+  };
+
+  // Add a community discussion comment
+  const addComment = async (pId, message) => {
+    try {
+      if (!message || !message.trim()) {
+        notify("error", "Please enter a comment message.");
+        return false;
+      }
+
+      const ethereum = getInjectedEthereum();
+      if (!ethereum) {
+        notify("error", "Please connect MetaMask to post a comment.");
+        return false;
+      }
+
+      setIsLoading(true);
+      notify("info", "Please confirm comment transaction in MetaMask...");
+
+      const provider = new ethers.providers.Web3Provider(ethereum, "any");
+      const signer = provider.getSigner();
+      const contract = getContract(signer);
+
+      const tx = await contract.addComment(pId, message.trim());
+      notify("info", "Posting comment on-chain...", 0);
+      await tx.wait();
+
+      notify("success", "Comment posted successfully.");
+      triggerRefresh();
+      return true;
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      const errorMsg =
+        error?.reason || error?.data?.message || error?.message || "Failed to add comment.";
+      notify("error", errorMsg);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Get community discussion comments
+  const getComments = async (pId) => {
+    try {
+      const contract = getContract();
+      const comments = await contract.getComments(pId);
+      return (comments || []).map((c) => ({
+        commenter: c.commenter,
+        timestamp: c.timestamp.toNumber(),
+        message: c.message,
+      }));
+    } catch (error) {
+      console.error(`Error fetching comments for campaign #${pId}:`, error);
+      return [];
     }
   };
 
@@ -427,6 +544,10 @@ export const CrowdFundingProvider = ({ children }) => {
         getUserCampaigns,
         donate,
         getDonations,
+        postUpdate,
+        getUpdates,
+        addComment,
+        getComments,
       }}
     >
       {children}

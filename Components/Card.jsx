@@ -10,6 +10,7 @@ const Card = ({
   address,
   onOpenCreateModal,
   isMyTab,
+  onOpenDetails,
 }) => {
   const { connectWallet, isLoading } = useContext(CrowdFundingContext);
   const [copiedId, setCopiedId] = useState(null);
@@ -109,9 +110,30 @@ const Card = ({
                   key={campaign.pId}
                   className="glass-card rounded-2xl overflow-hidden flex flex-col justify-between group border border-white/10 hover:border-brand-500/40 transition-all duration-300"
                 >
+                  {/* Media Banner */}
+                  {campaign.image && (
+                    <div
+                      onClick={() => onOpenDetails && onOpenDetails(campaign)}
+                      className="w-full h-40 overflow-hidden relative cursor-pointer group-hover:opacity-90 transition-opacity"
+                    >
+                      <img
+                        src={campaign.image}
+                        alt={campaign.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent"></div>
+                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-md text-[10px] font-semibold text-white border border-white/10">
+                        {campaign.category || "General"}
+                      </span>
+                    </div>
+                  )}
+
                   <div className="p-6">
-                    {/* Card Header: Creator & Status Badges */}
-                    <div className="flex items-center justify-between gap-2 mb-4">
+                    {/* Header Badges */}
+                    <div className="flex items-center justify-between gap-2 mb-3">
                       {/* Creator Pill */}
                       <button
                         onClick={() => copyToClipboard(campaign.owner, campaign.pId)}
@@ -144,17 +166,20 @@ const Card = ({
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-lg font-bold text-white group-hover:text-brand-300 transition-colors mb-2 line-clamp-1">
+                    <h3
+                      onClick={() => onOpenDetails && onOpenDetails(campaign)}
+                      className="text-lg font-bold text-white group-hover:text-brand-300 transition-colors mb-2 line-clamp-1 cursor-pointer"
+                    >
                       {campaign.title}
                     </h3>
 
                     {/* Description */}
-                    <p className="text-gray-400 text-xs line-clamp-3 mb-5 leading-relaxed min-h-[3.25rem]">
+                    <p className="text-gray-400 text-xs line-clamp-2 mb-4 leading-relaxed min-h-[2.25rem]">
                       {campaign.description}
                     </p>
 
                     {/* Progress Bar */}
-                    <div className="space-y-1.5 mb-5">
+                    <div className="space-y-1.5 mb-4">
                       <div className="flex justify-between text-xs font-medium">
                         <span className="text-gray-400">Progress</span>
                         <span className="text-brand-300">{campaign.percentage}%</span>
@@ -189,7 +214,14 @@ const Card = ({
                   </div>
 
                   {/* Card Action Footer */}
-                  <div className="p-4 px-6 border-t border-white/5 bg-black/20 flex items-center gap-3">
+                  <div className="p-4 px-6 border-t border-white/5 bg-black/20 flex items-center gap-2">
+                    <button
+                      onClick={() => onOpenDetails && onOpenDetails(campaign)}
+                      className="px-3.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 text-xs font-medium transition-colors shrink-0"
+                    >
+                      Details & Feed
+                    </button>
+
                     {isOwner ? (
                       <div className="w-full py-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold text-center">
                         Your Campaign
@@ -202,7 +234,7 @@ const Card = ({
                         }}
                         className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 text-xs font-semibold transition-colors"
                       >
-                        View Contributors ({campaign.donators?.length || 0})
+                        Contributors ({campaign.donators?.length || 0})
                       </button>
                     ) : (
                       <button
@@ -210,9 +242,9 @@ const Card = ({
                           setDonate(campaign);
                           setOpenModel(true);
                         }}
-                        className="w-full py-2.5 rounded-xl text-xs font-semibold text-white gradient-btn shadow-md hover:shadow-brand-500/20 transition-all flex items-center justify-center gap-2"
+                        className="w-full py-2.5 rounded-xl text-xs font-semibold text-white gradient-btn shadow-md hover:shadow-brand-500/20 transition-all flex items-center justify-center gap-1.5"
                       >
-                        <span>Back this project</span>
+                        <span>Back project</span>
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
