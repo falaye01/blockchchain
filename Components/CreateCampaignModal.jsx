@@ -1,6 +1,8 @@
 import React, { useState, useContext } from "react";
 import { CrowdFundingContext } from "../Context/CrowdFunding";
 import { PROJECT_CATEGORIES, CATEGORY_DEFAULT_IMAGES } from "../Context/ipfs";
+import CustomDropdown from "./CustomDropdown";
+import CustomDatePicker from "./CustomDatePicker";
 
 const CreateCampaignModal = ({ isOpen, onClose }) => {
   const { createCampaign, isLoading, currentAccount, connectWallet } =
@@ -17,7 +19,6 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  // Calculate minimum deadline date (tomorrow)
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const minDateStr = tomorrow.toISOString().split("T")[0];
@@ -50,7 +51,7 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-xl glass-modal rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/10 text-white max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-xl glass-modal rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 text-white max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -92,22 +93,13 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
-                Category *
-              </label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full h-11 px-4 rounded-xl glass-input text-sm"
-              >
-                {PROJECT_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat} className="bg-gray-900 text-white">
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Custom Category Dropdown */}
+            <CustomDropdown
+              label="Category *"
+              options={PROJECT_CATEGORIES}
+              value={formData.category}
+              onChange={(cat) => setFormData({ ...formData, category: cat })}
+            />
 
             <div>
               <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
@@ -131,19 +123,13 @@ const CreateCampaignModal = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
-              Target Deadline *
-            </label>
-            <input
-              type="date"
-              required
-              min={minDateStr}
-              value={formData.deadline}
-              onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-              className="w-full h-11 px-4 rounded-xl glass-input text-sm"
-            />
-          </div>
+          {/* Custom Date Picker */}
+          <CustomDatePicker
+            label="Target Deadline *"
+            value={formData.deadline}
+            onChange={(dateStr) => setFormData({ ...formData, deadline: dateStr })}
+            minDate={minDateStr}
+          />
 
           <div>
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">

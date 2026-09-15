@@ -10,6 +10,7 @@ import {
   CreateCampaignModal,
   StatsAnalytics,
   CampaignDetailsModal,
+  CustomDropdown,
 } from "../Components";
 
 const Index = () => {
@@ -274,25 +275,18 @@ const Index = () => {
                   )}
                 </div>
 
-                <div className="w-full sm:w-auto flex items-center gap-2">
-                  <select
+                <div className="w-full sm:w-48">
+                  <CustomDropdown
+                    options={[
+                      { label: "Sort: Newest", value: "newest" },
+                      { label: "Sort: Most Funded", value: "most_funded" },
+                      { label: "Sort: Target (High to Low)", value: "target_high" },
+                      { label: "Sort: Target (Low to High)", value: "target_low" },
+                    ]}
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full sm:w-auto h-10 px-3 rounded-xl glass-input text-xs font-medium"
-                  >
-                    <option value="newest" className="bg-gray-900 text-white">
-                      Sort: Newest
-                    </option>
-                    <option value="most_funded" className="bg-gray-900 text-white">
-                      Sort: Most Funded
-                    </option>
-                    <option value="target_high" className="bg-gray-900 text-white">
-                      Sort: Target (High to Low)
-                    </option>
-                    <option value="target_low" className="bg-gray-900 text-white">
-                      Sort: Target (Low to High)
-                    </option>
-                  </select>
+                    onChange={(val) => setSortBy(val)}
+                    size="sm"
+                  />
                 </div>
               </div>
             )}

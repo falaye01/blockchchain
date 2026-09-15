@@ -1,6 +1,8 @@
 import React, { useState, useContext } from "react";
 import { CrowdFundingContext } from "../Context/CrowdFunding";
 import { PROJECT_CATEGORIES } from "../Context/ipfs";
+import CustomDropdown from "./CustomDropdown";
+import CustomDatePicker from "./CustomDatePicker";
 
 const Hero = ({ onOpenCreateModal, stats }) => {
   const { currentAccount, connectWallet, createCampaign, isLoading } =
@@ -150,24 +152,15 @@ const Hero = ({ onOpenCreateModal, stats }) => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1">
-                    Category
-                  </label>
-                  <select
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <CustomDropdown
+                    label="Category"
+                    size="sm"
+                    options={PROJECT_CATEGORIES}
                     value={campaign.category}
-                    onChange={(e) => setCampaign({ ...campaign, category: e.target.value })}
-                    className="w-full h-10 px-3 rounded-xl glass-input text-xs"
-                  >
-                    {PROJECT_CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat} className="bg-gray-900 text-white">
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                    onChange={(cat) => setCampaign({ ...campaign, category: cat })}
+                  />
 
-                <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1">
                       Target (ETH)
@@ -180,24 +173,18 @@ const Hero = ({ onOpenCreateModal, stats }) => {
                       placeholder="e.g. 2.5"
                       value={campaign.amount}
                       onChange={(e) => setCampaign({ ...campaign, amount: e.target.value })}
-                      className="w-full h-10 px-3.5 rounded-xl glass-input text-xs"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1">
-                      Deadline
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      min={minDateStr}
-                      value={campaign.deadline}
-                      onChange={(e) => setCampaign({ ...campaign, deadline: e.target.value })}
-                      className="w-full h-10 px-3.5 rounded-xl glass-input text-xs"
+                      className="w-full h-9 px-3 rounded-xl glass-input text-xs"
                     />
                   </div>
                 </div>
+
+                <CustomDatePicker
+                  label="Target Deadline"
+                  size="sm"
+                  value={campaign.deadline}
+                  onChange={(dateStr) => setCampaign({ ...campaign, deadline: dateStr })}
+                  minDate={minDateStr}
+                />
 
                 <div>
                   <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1">
