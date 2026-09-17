@@ -89,35 +89,51 @@ export const CrowdFundingProvider = ({ children }) => {
     [getProvider]
   );
 
-  // Switch or add local Hardhat network in MetaMask automatically
-  const switchNetworkToLocalhost = async () => {
+  // Automatically ensure wallet is on the correct network (Sepolia on production / 31337 on local)
+  const ensureCorrectNetwork = async () => {
     const ethereum = getInjectedEthereum();
     if (!ethereum) return;
 
-    const hardhatChainId = "0x7a69"; // 31337 in hex
+    const isLocal =
+      typeof window !== "undefined" &&
+      (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+
+    const targetChainId = isLocal ? "0x7a69" : "0xaa36a7"; // 31337 or 11155111 (Sepolia)
+
     try {
       await ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: hardhatChainId }],
+        params: [{ chainId: targetChainId }],
       });
     } catch (switchError) {
       if (switchError.code === 4902 || switchError?.data?.originalError?.code === 4902) {
         try {
-          await ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: hardhatChainId,
-                chainName: "Hardhat Localhost (31337)",
-                rpcUrls: ["http://127.0.0.1:8545"],
-                nativeCurrency: {
-                  name: "ETH",
-                  symbol: "ETH",
-                  decimals: 18,
+          if (isLocal) {
+            await ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: "0x7a69",
+                  chainName: "Hardhat Localhost",
+                  rpcUrls: ["http://127.0.0.1:8545"],
+                  nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
                 },
-              },
-            ],
-          });
+              ],
+            });
+          } else {
+            await ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: "0xaa36a7",
+                  chainName: "Sepolia",
+                  rpcUrls: ["https://ethereum-sepolia-rpc.publicnode.com"],
+                  nativeCurrency: { name: "Sepolia ETH", symbol: "ETH", decimals: 18 },
+                  blockExplorerUrls: ["https://sepolia.etherscan.io"],
+                },
+              ],
+            });
+          }
         } catch (addError) {
           console.error("Failed to add network:", addError);
         }
@@ -174,6 +190,7 @@ export const CrowdFundingProvider = ({ children }) => {
 
       let accounts;
       try {
+        await ensureCorrectNetwork();
         accounts = await ethereum.request({ method: "eth_requestAccounts" });
       } catch (reqErr) {
         if (reqErr.code === -32002) {
@@ -245,6 +262,7 @@ export const CrowdFundingProvider = ({ children }) => {
       }
 
       setIsLoading(true);
+      await ensureCorrectNetwork();
       notify("info", "Please confirm transaction in your MetaMask wallet...");
 
       const provider = new ethers.providers.Web3Provider(ethereum, "any");
@@ -362,6 +380,7 @@ export const CrowdFundingProvider = ({ children }) => {
       }
 
       setIsLoading(true);
+      await ensureCorrectNetwork();
       notify("info", "Please confirm transaction in your MetaMask wallet...");
 
       const provider = new ethers.providers.Web3Provider(ethereum, "any");
