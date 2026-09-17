@@ -101,6 +101,11 @@ export const CrowdFundingProvider = ({ children }) => {
     const targetChainId = isLocal ? "0x7a69" : "0xaa36a7"; // 31337 or 11155111 (Sepolia)
 
     try {
+      const currentChainId = await ethereum.request({ method: "eth_chainId" }).catch(() => null);
+      if (currentChainId && currentChainId.toLowerCase() === targetChainId.toLowerCase()) {
+        return; // Already on the correct network!
+      }
+
       await ethereum.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: targetChainId }],
@@ -135,8 +140,10 @@ export const CrowdFundingProvider = ({ children }) => {
             });
           }
         } catch (addError) {
-          console.error("Failed to add network:", addError);
+          console.warn("Failed to add network:", addError);
         }
+      } else {
+        console.warn("Network switch notice:", switchError);
       }
     }
   };
