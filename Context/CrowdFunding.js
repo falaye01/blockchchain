@@ -71,7 +71,13 @@ export const CrowdFundingProvider = ({ children }) => {
     if (injected) {
       return new ethers.providers.Web3Provider(injected, "any");
     }
-    return new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
+    const fallbackRpc =
+      process.env.NEXT_PUBLIC_RPC_URL ||
+      (typeof window !== "undefined" &&
+      (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+        ? "http://127.0.0.1:8545"
+        : "https://ethereum-sepolia-rpc.publicnode.com");
+    return new ethers.providers.JsonRpcProvider(fallbackRpc);
   }, []);
 
   // Fetch contract instance with signer or provider
