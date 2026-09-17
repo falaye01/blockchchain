@@ -148,17 +148,30 @@ export const CrowdFundingProvider = ({ children }) => {
     }
   };
 
-  // Update balance for current account
+  // Update balance for current account (queries Sepolia network directly for instant accuracy)
   const updateBalance = async (account) => {
     try {
       if (!account) return;
-      const ethereum = getInjectedEthereum();
-      if (!ethereum) return;
-      const provider = new ethers.providers.Web3Provider(ethereum, "any");
-      const balance = await provider.getBalance(account);
+      const targetRpc =
+        typeof window !== "undefined" &&
+        (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+          ? "http://127.0.0.1:8545"
+          : "https://ethereum-sepolia-rpc.publicnode.com";
+
+      const rpcProvider = new ethers.providers.JsonRpcProvider(targetRpc);
+      const balance = await rpcProvider.getBalance(account);
       setAccountBalance(parseFloat(ethers.utils.formatEther(balance)).toFixed(4));
     } catch (err) {
-      console.warn("Could not fetch account balance", err);
+      try {
+        const ethereum = getInjectedEthereum();
+        if (ethereum) {
+          const provider = new ethers.providers.Web3Provider(ethereum, "any");
+          const balance = await provider.getBalance(account);
+          setAccountBalance(parseFloat(ethers.utils.formatEther(balance)).toFixed(4));
+        }
+      } catch (injectedErr) {
+        console.warn("Could not fetch account balance", injectedErr);
+      }
     }
   };
 
