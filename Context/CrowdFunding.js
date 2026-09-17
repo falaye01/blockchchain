@@ -51,6 +51,20 @@ export const CrowdFundingProvider = ({ children }) => {
     return window.ethereum;
   };
 
+  // Helper for mobile deep-linking or missing wallet guidance
+  const handleMobileOrMissingWallet = (actionMsg = "interact with this protocol") => {
+    if (typeof window !== "undefined") {
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (isMobile) {
+        const dappHost = window.location.href.replace(/^https?:\/\//, "");
+        notify("info", "Redirecting to MetaMask Mobile in-app browser...");
+        window.location.href = `https://metamask.app.link/dapp/${dappHost}`;
+        return;
+      }
+    }
+    notify("error", `MetaMask was not detected. Please install MetaMask or open this dApp inside your Web3 mobile browser to ${actionMsg}.`);
+  };
+
   // Get active provider (browser wallet or fallback JsonRpc)
   const getProvider = useCallback(() => {
     const injected = getInjectedEthereum();
@@ -146,7 +160,7 @@ export const CrowdFundingProvider = ({ children }) => {
       const ethereum = getInjectedEthereum();
 
       if (!ethereum) {
-        notify("error", "MetaMask was not detected. Please install or enable MetaMask in your browser.");
+        handleMobileOrMissingWallet("connect your wallet");
         return;
       }
 
@@ -220,7 +234,7 @@ export const CrowdFundingProvider = ({ children }) => {
 
       const ethereum = getInjectedEthereum();
       if (!ethereum) {
-        notify("error", "Please connect MetaMask to create a campaign.");
+        handleMobileOrMissingWallet("create a campaign");
         return false;
       }
 
@@ -337,7 +351,7 @@ export const CrowdFundingProvider = ({ children }) => {
 
       const ethereum = getInjectedEthereum();
       if (!ethereum) {
-        notify("error", "Please connect MetaMask to make a contribution.");
+        handleMobileOrMissingWallet("make a contribution");
         return false;
       }
 
@@ -384,7 +398,7 @@ export const CrowdFundingProvider = ({ children }) => {
 
       const ethereum = getInjectedEthereum();
       if (!ethereum) {
-        notify("error", "Please connect MetaMask to post an update.");
+        handleMobileOrMissingWallet("post an update");
         return false;
       }
 
@@ -439,7 +453,7 @@ export const CrowdFundingProvider = ({ children }) => {
 
       const ethereum = getInjectedEthereum();
       if (!ethereum) {
-        notify("error", "Please connect MetaMask to post a comment.");
+        handleMobileOrMissingWallet("post a comment");
         return false;
       }
 
